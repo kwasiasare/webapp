@@ -9,7 +9,7 @@
 </head>
 <body>
 <div id="app" class="container mt-5">
-    <h2 class="text-center mb-4">Scensob Shift Management</h2>
+    <h2 class="text-center mb-4">Shift Management</h2>
     <button class="btn btn-primary mb-3" @click="showAddModal">Add New Shift</button>
 
     <table class="table table-bordered table-striped">
@@ -62,8 +62,15 @@
                     <h5 class="modal-title">{{ isEditing ? 'Edit Shift' : 'Add New Shift' }}</h5>
                     <button type="button" class="btn-close" @click="hideModal"></button>
                 </div>
-                <div class="modal-body">
-                    <form @submit.prevent="isEditing ? updateShift() : addShift()">
+                $1
+                        <div class="mb-3">
+                            <label for="coordinator" class="form-label">Coordinator</label>
+                            <input type="text" id="coordinator" v-model="form.coordinator" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="assignedTo" class="form-label">Assigned To</label>
+                            <input type="text" id="assignedTo" v-model="form.assignedTo" class="form-control">
+                        </div>
                         <div class="mb-3">
                             <label for="location" class="form-label">Location</label>
                             <input type="text" id="location" v-model="form.location" class="form-control" required>
@@ -85,14 +92,8 @@
                             <input type="text" id="mapStaff" v-model="form.mapStaff" class="form-control" required>
                         </div>
                         $1
-                        <div class="mb-3">
-                            <label for="coordinator" class="form-label">Coordinator</label>
-                            <input type="text" id="coordinator" v-model="form.coordinator" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="assignedTo" class="form-label">Assigned To</label>
-                            <input type="text" id="assignedTo" v-model="form.assignedTo" class="form-control" required>
-                        </div>
+                        
+                        
                         
                         
                         $1
@@ -147,10 +148,7 @@
                 this.resetForm();
             },
             addShift() {
-$1const now = new Date();
-$1this.form.shiftId = Date.now();
-$1this.form.dateReceived = now.toLocaleDateString();
-$1this.form.timeReceived = now.toLocaleTimeString();
+
                 this.shifts.push({ ...this.form });
                 this.hideModal();
             },
@@ -165,7 +163,6 @@ $1this.form.timeReceived = now.toLocaleTimeString();
                 this.shifts = this.shifts.filter(shift => shift.shiftId !== shiftId);
             },
             resetForm() {
-$1const now = new Date();
 $1this.form = {
                     shiftId: '',
                     location: '',
