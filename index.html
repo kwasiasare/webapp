@@ -55,62 +55,53 @@
     </table>
 
     <!-- Modal for Adding/Editing Shifts -->
-    <div class="modal fade" tabindex="-1" v-if="isModalVisible">
-        <div class="modal-dialog modal-dialog-centered">
+    <div class="modal fade show" tabindex="-1" style="display: block;" v-if="isModalVisible">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">{{ isEditing ? 'Edit Shift' : 'Add New Shift' }}</h5>
                     <button type="button" class="btn-close" @click="hideModal"></button>
                 </div>
-                <form @submit.prevent="submitForm">
-                    <div class="modal-body">
+                <div class="modal-body">
+                    <form @submit.prevent="isEditing ? updateShift() : addShift()">
                         <div class="mb-3">
                             <label for="location" class="form-label">Location</label>
                             <input type="text" id="location" v-model="form.location" class="form-control" required>
-                            <div v-if="validationErrors.location" class="text-danger">{{ validationErrors.location }}</div>
                         </div>
                         <div class="mb-3">
                             <label for="date" class="form-label">Date</label>
                             <input type="date" id="date" v-model="form.date" class="form-control" required>
-                            <div v-if="validationErrors.date" class="text-danger">{{ validationErrors.date }}</div>
                         </div>
                         <div class="mb-3">
                             <label for="startTime" class="form-label">Start Time</label>
                             <input type="time" id="startTime" v-model="form.startTime" class="form-control" required>
-                            <div v-if="validationErrors.startTime" class="text-danger">{{ validationErrors.startTime }}</div>
                         </div>
                         <div class="mb-3">
                             <label for="endTime" class="form-label">End Time</label>
                             <input type="time" id="endTime" v-model="form.endTime" class="form-control" required>
-                            <div v-if="validationErrors.endTime" class="text-danger">{{ validationErrors.endTime }}</div>
                         </div>
                         <div class="mb-3">
                             <label for="mapStaff" class="form-label">MAP Staff</label>
                             <input type="text" id="mapStaff" v-model="form.mapStaff" class="form-control" required>
-                            <div v-if="validationErrors.mapStaff" class="text-danger">{{ validationErrors.mapStaff }}</div>
                         </div>
                         <div class="mb-3">
                             <label for="gender" class="form-label">Gender</label>
-                            <input type="text" id="gender" v-model="form.gender" class="form-control">
+                            <select id="gender" v-model="form.gender" class="form-control" required>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
                         </div>
                         <div class="mb-3">
-                            <label for="originalMessage" class="form-label">Original Message</label>
-                            <textarea id="originalMessage" v-model="form.originalMessage" class="form-control"></textarea>
+                            <label for="status" class="form-label">Status</label>
+                            <input type="text" id="status" v-model="form.status" class="form-control" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="coordinator" class="form-label">Coordinator</label>
-                            <input type="text" id="coordinator" v-model="form.coordinator" class="form-control">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @click="hideModal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">{{ isEditing ? 'Update' : 'Add' }} Shift</button>
                         </div>
-                        <div class="mb-3">
-                            <label for="assignedTo" class="form-label">Assigned To</label>
-                            <input type="text" id="assignedTo" v-model="form.assignedTo" class="form-control">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @click="hideModal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">{{ isEditing ? 'Update' : 'Add' }} Shift</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -137,8 +128,7 @@
                     coordinator: '',
                     assignedTo: '',
                     status: ''
-                },
-                validationErrors: {}
+                }
             };
         },
         methods: {
@@ -155,15 +145,6 @@
             hideModal() {
                 this.isModalVisible = false;
                 this.resetForm();
-            },
-            submitForm() {
-                if (this.validateForm()) {
-                    if (this.isEditing) {
-                        this.updateShift();
-                    } else {
-                        this.addShift();
-                    }
-                }
             },
             addShift() {
                 this.form.shiftId = Date.now();
@@ -196,28 +177,6 @@
                     assignedTo: '',
                     status: ''
                 };
-                this.validationErrors = {};
-            },
-            validateForm() {
-                this.validationErrors = {};
-
-                if (!this.form.location) {
-                    this.validationErrors.location = "Location is required";
-                }
-                if (!this.form.date) {
-                    this.validationErrors.date = "Date is required";
-                }
-                if (!this.form.startTime) {
-                    this.validationErrors.startTime = "Start time is required";
-                }
-                if (!this.form.endTime) {
-                    this.validationErrors.endTime = "End time is required";
-                }
-                if (!this.form.mapStaff) {
-                    this.validationErrors.mapStaff = "MAP Staff is required";
-                }
-
-                return Object.keys(this.validationErrors).length === 0;
             }
         }
     });
