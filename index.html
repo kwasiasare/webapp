@@ -82,7 +82,18 @@
                         </div>
                         <div class="mb-3">
                             <label for="mapStaff" class="form-label">MAP Staff</label>
-                            <input type="text" id="mapStaff" v-model="form.mapStaff" class="form-control" required>
+                            <select id="mapStaff" v-model="form.mapStaff" class="form-control" required>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="coordinator" class="form-label">coordinator</label>
+                            <input type="text" id="coordinator" v-model="form.coordinator" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="assignedTo" class="form-label">Assigned To</label>
+                            <input type="text" id="assignedTo" v-model="form.assignedTo" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label for="gender" class="form-label">Gender</label>
