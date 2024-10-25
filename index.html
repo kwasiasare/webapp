@@ -84,18 +84,18 @@
                             <label for="mapStaff" class="form-label">MAP Staff</label>
                             <input type="text" id="mapStaff" v-model="form.mapStaff" class="form-control" required>
                         </div>
+                        $1
                         <div class="mb-3">
-                            <label for="gender" class="form-label">Gender</label>
-                            <select id="gender" v-model="form.gender" class="form-control" required>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
-                            </select>
+                            <label for="coordinator" class="form-label">Coordinator</label>
+                            <input type="text" id="coordinator" v-model="form.coordinator" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <label for="status" class="form-label">Status</label>
-                            <input type="text" id="status" v-model="form.status" class="form-control" required>
+                            <label for="assignedTo" class="form-label">Assigned To</label>
+                            <input type="text" id="assignedTo" v-model="form.assignedTo" class="form-control" required>
                         </div>
+                        
+                        
+                        $1
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @click="hideModal">Cancel</button>
                             <button type="submit" class="btn btn-primary">{{ isEditing ? 'Update' : 'Add' }} Shift</button>
@@ -147,7 +147,10 @@
                 this.resetForm();
             },
             addShift() {
-                this.form.shiftId = Date.now();
+$1const now = new Date();
+$1this.form.shiftId = Date.now();
+$1this.form.dateReceived = now.toLocaleDateString();
+$1this.form.timeReceived = now.toLocaleTimeString();
                 this.shifts.push({ ...this.form });
                 this.hideModal();
             },
@@ -162,7 +165,8 @@
                 this.shifts = this.shifts.filter(shift => shift.shiftId !== shiftId);
             },
             resetForm() {
-                this.form = {
+$1const now = new Date();
+$1this.form = {
                     shiftId: '',
                     location: '',
                     date: '',
