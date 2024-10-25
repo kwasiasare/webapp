@@ -62,7 +62,7 @@
                     <h5 class="modal-title">{{ isEditing ? 'Edit Shift' : 'Add New Shift' }}</h5>
                     <button type="button" class="btn-close" @click="hideModal"></button>
                 </div>
-                <form @submit.prevent="isEditing ? updateShift() : addShift()">
+                <form @submit.prevent="submitForm">
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="location" class="form-label">Location</label>
@@ -156,21 +156,26 @@
                 this.isModalVisible = false;
                 this.resetForm();
             },
-            addShift() {
+            submitForm() {
                 if (this.validateForm()) {
-                    this.form.shiftId = Date.now();
-                    this.shifts.push({ ...this.form });
-                    this.hideModal();
+                    if (this.isEditing) {
+                        this.updateShift();
+                    } else {
+                        this.addShift();
+                    }
                 }
             },
+            addShift() {
+                this.form.shiftId = Date.now();
+                this.shifts.push({ ...this.form });
+                this.hideModal();
+            },
             updateShift() {
-                if (this.validateForm()) {
-                    const index = this.shifts.findIndex(shift => shift.shiftId === this.form.shiftId);
-                    if (index !== -1) {
-                        this.shifts[index] = { ...this.form };
-                    }
-                    this.hideModal();
+                const index = this.shifts.findIndex(shift => shift.shiftId === this.form.shiftId);
+                if (index !== -1) {
+                    this.shifts[index] = { ...this.form };
                 }
+                this.hideModal();
             },
             deleteShift(shiftId) {
                 this.shifts = this.shifts.filter(shift => shift.shiftId !== shiftId);
