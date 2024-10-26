@@ -126,7 +126,7 @@
     const app = Vue.createApp({
         data() {
             return {
-                apiUrl: 'webappfuncapp202410.azurewebsites.net',
+                apiUrl: 'https://webappfuncapp202410.azurewebsites.net',
                 shifts: [],
                 isModalVisible: false,
                 isEditing: false,
@@ -233,9 +233,10 @@
                     status: ''
                 };
             }
-        }
+        },
         mounted() {
             this.fetchShifts();
+        }
     });
     app.mount('#app');
 </script>
