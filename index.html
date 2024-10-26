@@ -126,6 +126,7 @@
     const app = Vue.createApp({
         data() {
             return {
+                apiUrl: 'webappfuncapp202410.azurewebsites.net',
                 shifts: [],
                 isModalVisible: false,
                 isEditing: false,
@@ -147,6 +148,14 @@
             };
         },
         methods: {
+            async fetchShifts() {
+                try {
+                    const response = await fetch(`${this.apiUrl}/shifts`);
+                    this.shifts = await response.json();
+                } catch (error) {
+                    console.error("Error fetching shifts:", error);
+                }
+            },
             showAddModal() {
                 this.isModalVisible = true;
                 this.isEditing = false;
@@ -161,23 +170,51 @@
                 this.isModalVisible = false;
                 this.resetForm();
             },
-            addShift() {
-                this.form.shiftId = Date.now();
-                const currentDate = new Date();
-                this.form.dateReceived = currentDate.toLocaleDateString();
-                this.form.timeReceived = currentDate.toLocaleTimeString();
-                this.shifts.push({ ...this.form });
-                this.hideModal();
-            },
-            updateShift() {
-                const index = this.shifts.findIndex(shift => shift.shiftId === this.form.shiftId);
-                if (index !== -1) {
-                    this.shifts[index] = { ...this.form };
+            async addShift() {
+                try {
+                    const response = await fetch(`${this.apiUrl}/shifts`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(this.form)
+                    });
+                    if (response.ok) {
+                        const newShift = await response.json();
+                        this.shifts.push(newShift);
+                        this.hideModal();
+                    }
+                } catch (error) {
+                    console.error("Error adding shift:", error);
                 }
-                this.hideModal();
             },
-            deleteShift(shiftId) {
-                this.shifts = this.shifts.filter(shift => shift.shiftId !== shiftId);
+            async updateShift() {
+                try {
+                    const response = await fetch(`${this.apiUrl}/shifts/${this.form.shiftId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(this.form)
+                    });
+                    if (response.ok) {
+                        const index = this.shifts.findIndex(shift => shift.shiftId === this.form.shiftId);
+                        if (index !== -1) {
+                            this.shifts[index] = { ...this.form };
+                        }
+                        this.hideModal();
+                    }
+                } catch (error) {
+                    console.error("Error updating shift:", error);
+                }
+            },
+            async deleteShift(shiftId) {
+                try {
+                    const response = await fetch(`${this.apiUrl}/shifts/${shiftId}`, {
+                        method: 'DELETE'
+                    });
+                    if (response.ok) {
+                        this.shifts = this.shifts.filter(shift => shift.shiftId !== shiftId);
+                    }
+                } catch (error) {
+                    console.error("Error deleting shift:", error);
+                }
             },
             resetForm() {
                 this.form = {
@@ -197,6 +234,8 @@
                 };
             }
         }
+        mounted() {
+            this.fetchShifts();
     });
     app.mount('#app');
 </script>
