@@ -88,7 +88,7 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="coordinator" class="form-label">coordinator</label>
+                            <label for="coordinator" class="form-label">Coordinator</label>
                             <input type="text" id="coordinator" v-model="form.coordinator" class="form-control" required>
                         </div>
                         <div class="mb-3">
@@ -159,6 +159,9 @@
             },
             addShift() {
                 this.form.shiftId = Date.now();
+                const currentDate = new Date();
+                this.form.dateReceived = currentDate.toLocaleDateString();
+                this.form.timeReceived = currentDate.toLocaleTimeString();
                 this.shifts.push({ ...this.form });
                 this.hideModal();
             },
