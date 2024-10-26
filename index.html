@@ -92,20 +92,20 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="coordinator" class="form-label">Coordinator</label>
-                            <input type="text" id="coordinator" v-model="form.coordinator" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="assignedTo" class="form-label">Assigned To</label>
-                            <input type="text" id="assignedTo" v-model="form.assignedTo" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
                             <label for="gender" class="form-label">Gender</label>
                             <select id="gender" v-model="form.gender" class="form-control" required>
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>
                                 <option value="Other">Other</option>
                             </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="coordinator" class="form-label">Coordinator</label>
+                            <input type="text" id="coordinator" v-model="form.coordinator" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="assignedTo" class="form-label">Assigned To</label>
+                            <input type="text" id="assignedTo" v-model="form.assignedTo" class="form-control">
                         </div>
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
