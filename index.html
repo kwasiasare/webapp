@@ -102,11 +102,14 @@
         methods: {
             async fetchShifts() {
                 try {
-                    const response = await fetch(this.apiUrl);
+                    const response = await fetch(`${this.apiUrl}`, {
+                        method: 'GET',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
                     if (response.ok) {
                         this.shifts = await response.json();
                     } else {
-                        console.error("Failed to fetch shifts");
+                        throw new Error('Failed to fetch shifts');
                     }
                 } catch (error) {
                     console.error("Error fetching shifts:", error);
@@ -135,7 +138,7 @@
             },
             async addShift() {
                 try {
-                    const response = await fetch(this.apiUrl, {
+                    const response = await fetch(`${this.apiUrl}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(this.form)
@@ -145,7 +148,7 @@
                         this.shifts.push(newShift);
                         this.hideModal();
                     } else {
-                        console.error("Failed to add shift");
+                        throw new Error('Failed to add shift');
                     }
                 } catch (error) {
                     console.error("Error adding shift:", error);
@@ -165,7 +168,7 @@
                         }
                         this.hideModal();
                     } else {
-                        console.error("Failed to update shift");
+                        throw new Error('Failed to update shift');
                     }
                 } catch (error) {
                     console.error("Error updating shift:", error);
@@ -179,7 +182,7 @@
                     if (response.ok) {
                         this.shifts = this.shifts.filter(shift => shift.shiftId !== shiftId);
                     } else {
-                        console.error("Failed to delete shift");
+                        throw new Error('Failed to delete shift');
                     }
                 } catch (error) {
                     console.error("Error deleting shift:", error);
