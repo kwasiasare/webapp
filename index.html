@@ -26,13 +26,13 @@
             <th>End Time</th>
             <th>MAP Staff</th>
             <th>Gender</th>
-            <th>Original Message</th>
             <th>Date Received</th>
             <th>Time Received</th>
             <th>Coordinator</th>
             <th>Assigned To</th>
             <th>Status</th>
             <th>Actions</th>
+            <th>Original Message</th>
         </tr>
         </thead>
         <tbody>
@@ -44,12 +44,12 @@
             <td>{{ shift.endTime }}</td>
             <td>{{ shift.mapStaff }}</td>
             <td>{{ shift.gender }}</td>
-            <td>{{ shift.originalMessage }}</td>
             <td>{{ shift.dateReceived }}</td>
             <td>{{ shift.timeReceived }}</td>
             <td>{{ shift.coordinator }}</td>
             <td>{{ shift.assignedTo }}</td>
             <td>{{ shift.status }}</td>
+            <td>{{ shift.originalMessage }}</td>
             <td>
                 <button class="btn btn-sm btn-warning" @click="showEditModal(shift)">Edit</button>
                 <button class="btn btn-sm btn-danger" @click="deleteShift(shift.shiftId)">Delete</button>
