@@ -123,7 +123,7 @@
                 this.isModalVisible = true;
                 this.isEditing = false;
                 this.form = this.getEmptyForm();
-                this.form.shiftId = this.generateShiftId();
+                this.form.shiftId = this.generateUUID();
                 const now = new Date();
                 this.form.dateReceived = now.toISOString().split('T')[0];  // Format as YYYY-MM-DD
                 this.form.timeReceived = now.toTimeString().split(' ')[0]; // Format as HH:MM:SS
@@ -242,6 +242,9 @@
                 return `${datePart}-${String(nextNumber).padStart(3, '0')}`;
             },
             
+            formatLabel(key) {
+                return key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+            },
             formatLabel(key) {
                 return key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
             },
