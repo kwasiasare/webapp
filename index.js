@@ -1,5 +1,3 @@
-const { CosmosClient } = require("@azure/cosmos");
-
 module.exports = async function (context, req) {
     const cosmosClient = new CosmosClient({
         endpoint: process.env['CosmosDBEndpoint'],
