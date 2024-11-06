@@ -1,3 +1,5 @@
+const { CosmosClient } = require("@azure/cosmos");
+
 module.exports = async function (context, req) {
     const cosmosClient = new CosmosClient({
         endpoint: process.env['CosmosDBEndpoint'],
@@ -23,6 +25,19 @@ module.exports = async function (context, req) {
 
             case 'POST':
                 const item = req.body;
+                // Generate shiftId, dateReceived, and timeReceived if they are not provided
+                if (!item.shiftId) {
+                    const datePart = new Date().toISOString().split('T')[0].replace(/-/g, '');
+                    const uniquePart = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+                    item.shiftId = `${datePart}-${uniquePart}`;
+                }
+                if (!item.dateReceived) {
+                    item.dateReceived = new Date().toISOString().split('T')[0];
+                }
+                if (!item.timeReceived) {
+                    item.timeReceived = new Date().toTimeString().split(' ')[0];
+                }
+
                 const { resource: createdItem } = await container.items.create(item);
                 context.res = {
                     body: createdItem
@@ -47,8 +62,7 @@ module.exports = async function (context, req) {
                     return;
                 }
 
-                const partitionKey = req.body.shiftId;
-                await container.item(shiftId, partitionKey).delete();  // Use shiftId as both ID and partition key
+                await container.item(shiftId, '/ShiftId').delete();  // Use shiftId as both ID and partition key
                 context.res = {
                     body: `Item with shiftId ${shiftId} deleted successfully`
                 };
