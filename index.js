@@ -1,3 +1,4 @@
+// File: index.js
 const { CosmosClient } = require("@azure/cosmos");
 
 module.exports = async function (context, req) {
@@ -25,11 +26,11 @@ module.exports = async function (context, req) {
 
             case 'POST':
                 const item = req.body;
-                // Generate shiftId, dateReceived, and timeReceived if they are not provided
-                if (!item.shiftId) {
+                // Generate ShiftId, dateReceived, and timeReceived if they are not provided
+                if (!item.ShiftId) {
                     const datePart = new Date().toISOString().split('T')[0].replace(/-/g, '');
                     const uniquePart = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-                    item.shiftId = `${datePart}-${uniquePart}`;
+                    item.ShiftId = `${datePart}-${uniquePart}`;
                 }
                 if (!item.dateReceived) {
                     item.dateReceived = new Date().toISOString().split('T')[0];
@@ -46,25 +47,37 @@ module.exports = async function (context, req) {
 
             case 'PUT':
                 const updatedItem = req.body;
-                const { resource: replacedItem } = await container.item(updatedItem.id, updatedItem.id).replace(updatedItem);
+                if (!updatedItem.ShiftId) {
+                    context.res = {
+                        status: 400,
+                        body: "ShiftId is required for updating"
+                    };
+                    return;
+                }
+
+                // Explicitly set the partition key (ShiftId) for the update operation
+                const { resource: replacedItem } = await container
+                    .item(updatedItem.ShiftId, updatedItem.ShiftId)
+                    .replace(updatedItem);
                 context.res = {
                     body: replacedItem
                 };
                 break;
 
             case 'DELETE':
-                const shiftId = req.params.shiftId;
-                if (!shiftId) {
+                const ShiftId = req.params.ShiftId;
+                if (!ShiftId) {
                     context.res = {
                         status: 400,
-                        body: "Missing shiftId parameter"
+                        body: "Missing ShiftId parameter"
                     };
                     return;
                 }
 
-                await container.item(shiftId, '/ShiftId').delete();  // Use shiftId as both ID and partition key
+                // Use ShiftId as both ID and partition key for deletion
+                await container.item(ShiftId, ShiftId).delete();
                 context.res = {
-                    body: `Item with shiftId ${shiftId} deleted successfully`
+                    body: `Item with ShiftId ${ShiftId} deleted successfully`
                 };
                 break;
 

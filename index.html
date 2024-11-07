@@ -36,8 +36,8 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="shift in shifts" :key="shift.shiftId">
-            <td>{{ shift.shiftId }}</td>
+        <tr v-for="shift in shifts" :key="shift.ShiftId">
+            <td>{{ shift.ShiftId }}</td>
             <td>{{ shift.location }}</td>
             <td>{{ shift.date }}</td>
             <td>{{ shift.startTime }}</td>
@@ -52,7 +52,7 @@
             <td>{{ shift.status }}</td>
             <td>
                 <button class="btn btn-sm btn-warning" @click="showEditModal(shift)">Edit</button>
-                <button class="btn btn-sm btn-danger" @click="deleteShift(shift.shiftId)">Delete</button>
+                <button class="btn btn-sm btn-danger" @click="deleteShift(shift.ShiftId)">Delete</button>
             </td>
         </tr>
         </tbody>
@@ -69,18 +69,18 @@
                 <div class="modal-body">
                     <form @submit.prevent="submitShift">
                         <template v-for="(value, key) in form">
-                            <div class="mb-3" v-if="key !== 'shiftId'">
-                                <label :for="key" class="form-label">{{ formatLabel(key) }}</label>
-                                <input v-if="!isSelectField(key)" :type="getFieldType(key)" :id="key" v-model="form[key]" class="form-control" :required="isRequiredField(key)">
-                                <select v-else :id="key" v-model="form[key]" class="form-control">
-                                    <option v-for="option in getSelectOptions(key)" :value="option">{{ option }}</option>
-                                </select>
+                            <div class="mb-3" v-if="editableFields.includes(key)">
+                             <label :for="key" class="form-label">{{ formatLabel(key) }}</label>
+                             <input v-if="!isSelectField(key)" :type="getFieldType(key)" :id="key" v-model="form[key]" class="form-control" :required="isRequiredField(key)">
+                             <select v-else :id="key" v-model="form[key]" class="form-control">
+                                <option v-for="option in getSelectOptions(key)" :value="option">{{ option }}</option>
+                             </select>
                             </div>
                         </template>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @click="hideModal">Cancel</button>
                             <button type="submit" class="btn btn-primary">{{ isEditing ? 'Update' : 'Add' }} Shift</button>
-                        </div>
+                       </div>
                     </form>
                 </div>
             </div>
@@ -93,21 +93,51 @@
         data() {
             return {
                 apiUrl: 'https://shift-funx-24.azurewebsites.net/api/HttpTrigger1',
-                functionKey: '0LZ_haOJ4t-GC1b6YNyVveL8ZQeNRbmicRfO6zeSNHQXAzFu7iaSoA==', // <-- Added function key here
+                functionKey: '0LZ_haOJ4t-GC1b6YNyVveL8ZQeNRbmicRfO6zeSNHQXAzFu7iaSoA==',
                 shifts: [],
                 isModalVisible: false,
                 isEditing: false,
-                form: this.getEmptyForm()
+                form: this.getEmptyForm,
+                editableFields: [
+                   'location', 'date', 'startTime', 'endTime', 
+                   'mapStaff', 'gender','coordinator', 'assignedTo', 'status'
+                ]
             };
         },
+        computed: {
+            getEmptyForm() {
+                return {
+                    ShiftId: '',
+                    location: '',
+                    date: '',
+                    startTime: '',
+                    endTime: '',
+                    mapStaff: '',
+                    gender: '',
+                    originalMessage: '',
+                    dateReceived: '',
+                    timeReceived: '',
+                    coordinator: '',
+                    assignedTo: '',
+                    status: ''
+                };
+            }
+        },
         methods: {
+            // Determines if a form field is required based on key
+            isRequiredField(key) {
+               // Define the fields that are required
+                const requiredFields = ['location', 'date', 'startTime', 'endTime', 'mapStaff', 'status'];
+               return requiredFields.includes(key);
+            },
+        
             async fetchShifts() {
                 try {
-                    const response = await fetch(`${this.apiUrl}`, {
+                    const response = await fetch(this.apiUrl, {
                         method: 'GET',
                         headers: { 
                             'Content-Type': 'application/json',
-                            'x-functions-key': this.functionKey // <-- Added function key to headers
+                            'x-functions-key': this.functionKey 
                         }
                     });
                     if (response.ok) {
@@ -119,23 +149,15 @@
                     console.error("Error fetching shifts:", error);
                 }
             },
-            showAddModal() {
+            async showAddModal() {
                 this.isModalVisible = true;
                 this.isEditing = false;
-                this.form = this.getEmptyForm();
-                this.form.shiftId = this.generateUUID();
-                const now = new Date();
-                this.form.dateReceived = now.toISOString().split('T')[0];  // Format as YYYY-MM-DD
-                this.form.timeReceived = now.toTimeString().split(' ')[0]; // Format as HH:MM:SS
+                this.form = { ...this.getEmptyForm };
             },
-            showEditModal(shift) {
+            async showEditModal(shift) {
                 this.isModalVisible = true;
                 this.isEditing = true;
                 this.form = { ...shift };
-            },
-            hideModal() {
-                this.isModalVisible = false;
-                this.form = this.getEmptyForm();
             },
             async submitShift() {
                 if (this.isEditing) {
@@ -146,11 +168,11 @@
             },
             async addShift() {
                 try {
-                    const response = await fetch(`${this.apiUrl}`, {
+                    const response = await fetch(this.apiUrl, {
                         method: 'POST',
                         headers: { 
                             'Content-Type': 'application/json',
-                            'x-functions-key': this.functionKey // <-- Added function key to headers
+                            'x-functions-key': this.functionKey
                         },
                         body: JSON.stringify(this.form)
                     });
@@ -167,18 +189,19 @@
             },
             async updateShift() {
                 try {
-                    const response = await fetch(`${this.apiUrl}/${this.form.shiftId}`, {
+                    const response = await fetch(`${this.apiUrl}/${this.form.ShiftId}`, {
                         method: 'PUT',
                         headers: { 
                             'Content-Type': 'application/json',
-                            'x-functions-key': this.functionKey // <-- Added function key to headers
+                            'x-functions-key': this.functionKey
                         },
                         body: JSON.stringify(this.form)
                     });
                     if (response.ok) {
-                        const index = this.shifts.findIndex(shift => shift.shiftId === this.form.shiftId);
+                        const updatedShift = await response.json();
+                        const index = this.shifts.findIndex(shift => shift.ShiftId === this.form.ShiftId);
                         if (index !== -1) {
-                            this.shifts[index] = { ...this.form };
+                            this.shifts[index] = updatedShift;
                         }
                         this.hideModal();
                     } else {
@@ -193,11 +216,11 @@
                     const response = await fetch(`${this.apiUrl}/${shiftId}`, {
                         method: 'DELETE',
                         headers: { 
-                            'x-functions-key': this.functionKey // <-- Added function key to headers
+                            'x-functions-key': this.functionKey
                         }
                     });
                     if (response.ok) {
-                        this.shifts = this.shifts.filter(shift => shift.shiftId !== shiftId);
+                        this.shifts = this.shifts.filter(shift => shift.ShiftId !== shiftId);
                     } else {
                         throw new Error('Failed to delete shift');
                     }
@@ -205,64 +228,29 @@
                     console.error("Error deleting shift:", error);
                 }
             },
-            getEmptyForm() {
-                return {
-                    shiftId: '',
-                    location: '',
-                    date: '',
-                    startTime: '',
-                    endTime: '',
-                    mapStaff: '',
-                    gender: '',
-                    originalMessage: '',
-                    dateReceived: '',
-                    timeReceived: '',
-                    coordinator: '',
-                    assignedTo: '',
-                    status: ''
-                };
-            },
-            generateShiftId() {
-                // Get today's date in YYYYMMDD format
-                const today = new Date();
-                const datePart = today.toISOString().split('T')[0].replace(/-/g, '');
-
-                // Filter shifts to get today's shifts only and find the latest shift number
-                const todayShifts = this.shifts.filter(shift => shift.shiftId.startsWith(datePart));
-                let nextNumber = 1;
-                
-                if (todayShifts.length > 0) {
-                    // Get the last shift ID and increment the sequence number
-                    const lastShiftId = todayShifts[todayShifts.length - 1].shiftId;
-                    const lastNumber = parseInt(lastShiftId.split('-')[1], 10);
-                    nextNumber = lastNumber + 1;
-                }
-
-                // Format the shift ID as YYYYMMDD-XXX
-                return `${datePart}-${String(nextNumber).padStart(3, '0')}`;
-            },
-            
-            formatLabel(key) {
-                return key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+            hideModal() {
+                this.isModalVisible = false;
+                this.form = { ...this.getEmptyForm };
             },
             formatLabel(key) {
                 return key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+            },
+            isSelectField(key) {
+                const selectFields = ['mapStaff','gender', 'status'];
+                return selectFields.includes(key);
             },
             getFieldType(key) {
                 if (key === 'date') return 'date';
                 if (key === 'startTime' || key === 'endTime') return 'time';
                 return 'text';
             },
-            isRequiredField(key) {
-                return ['location', 'date', 'startTime', 'endTime', 'mapStaff', 'gender', 'status'].includes(key);
-            },
-            isSelectField(key) {
-                return ['mapStaff', 'gender'].includes(key);
-            },
             getSelectOptions(key) {
-                if (key === 'mapStaff') return ['Yes', 'No'];
-                if (key === 'gender') return ['Male', 'Female', 'Other'];
-                return [];
+                const options = {
+                    mapStaff: ['Yes', 'No'],
+                    gender: ['Male', 'Female', 'Other'],
+                    status: ['Pending', 'Confirmed', 'Completed']
+                };
+                return options[key] || [];
             }
         },
         mounted() {
@@ -271,6 +259,7 @@
     });
     app.mount('#app');
 </script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
